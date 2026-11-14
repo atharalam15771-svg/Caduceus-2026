@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "users": {
+      "fields": {
+        "userId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "collegeName": { "type": "string" },
+        "department": { "type": "string" },
+        "studentId": { "type": "string" },
+        "role": { "type": "string" },
+        "approvalStatus": { "type": "string" },
+        "festPassId": { "type": "string" },
+        "zodiacSign": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      }
+    },
+    "events": {
+      "fields": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "venueId": { "type": "string" },
+        "venueName": { "type": "string" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "status": { "type": "string" },
+        "coordinatorName": { "type": "string" },
+        "coordinatorPhone": { "type": "string" },
+        "rules": { "type": "string" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      }
+    },
+    "notifications": {
+      "fields": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "category": { "type": "string" },
+        "targetVenue": { "type": "string" },
+        "eventId": { "type": "string" },
+        "isPinned": { "type": "boolean" },
+        "createdAt": { "type": "timestamp" }
+      }
+    },
+    "venues": {
+      "fields": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "locationNote": { "type": "string" },
+        "mapUrl": { "type": "string" },
+        "capacity": { "type": "string" }
+      }
+    },
+    "fest_settings": {
+      "fields": {
+        "festOpeningTimestamp": { "type": "string" },
+        "tagline": { "type": "string" },
+        "instagramUrl": { "type": "string" },
+        "facebookUrl": { "type": "string" },
+        "youtubeUrl": { "type": "string" },
+        "officialEmail": { "type": "string" },
+        "isRegistrationOpen": { "type": "boolean" },
+        "updatedAt": { "type": "timestamp" }
+      }
+    },
+    "leaderboard": {
+      "fields": {
+        "competitionName": { "type": "string" },
+        "participantName": { "type": "string" },
+        "collegeName": { "type": "string" },
+        "rank": { "type": "number" },
+        "points": { "type": "number" },
+        "isVerified": { "type": "boolean" }
+      }
+    }
+  }
+}

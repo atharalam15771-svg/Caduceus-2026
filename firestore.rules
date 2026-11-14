@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function userDocExists() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function currentUserRole() {
+      return userDocExists()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : 'STUDENT';
+    }
+
+    function currentUserApproval() {
+      return userDocExists()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.approvalStatus
+        : 'PENDING';
+    }
+
+    function isSuperAdminToken() {
+      return isAuthenticated() &&
+        request.auth.token.email == 'atharalam15771@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    function isSuperAdmin() {
+      return isSuperAdminToken() || currentUserRole() == 'SUPER_ADMIN';
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || currentUserRole() == 'EVENT_ADMIN';
+    }
+
+    function isApprovedUserOrAdmin() {
+      return isAdmin() || currentUserApproval() == 'APPROVED';
+    }
+
+    // Users collection: strict RBAC & Admin Verification Gate
+    match /users/{userId} {
+      // Users can read their own profile; only Admins can list/read all users
+      allow read: if isOwner(userId) || isAdmin();
+
+      // New users can only create their own profile with STUDENT + PENDING (or SUPER_ADMIN + APPROVED for verified owner email)
+      allow create: if isOwner(userId) &&
+        request.resource.data.userId == request.auth.uid &&
+        (
+          (request.resource.data.role == 'STUDENT' && request.resource.data.approvalStatus == 'PENDING') ||
+          (isSuperAdminToken() && request.resource.data.role == 'SUPER_ADMIN' && request.resource.data.approvalStatus == 'APPROVED')
+        ) &&
+        request.resource.data.checkedIn == false;
+
+      // Updates:
+      // 1) Super Admin can manage all user fields including promoting/demoting EVENT_ADMIN & approvalStatus
+      // 2) Event Admin can update approvalStatus & gate check-in fields, but cannot change roles
+      // 3) Owners can update their own non-privileged profile fields (zodiacSign, lastLoginAt, updatedAt, fullName), NEVER approvalStatus or role
+      allow update: if isSuperAdmin() ||
+        (isAdmin() &&
+          request.resource.data.role == resource.data.role) ||
+        (isOwner(userId) &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.approvalStatus == resource.data.approvalStatus &&
+          (!('checkedIn' in resource.data) || request.resource.data.checkedIn == resource.data.checkedIn) &&
+          (!('checkedInBy' in resource.data) || request.resource.data.checkedInBy == resource.data.checkedInBy) &&
+          request.resource.data.festPassId == resource.data.festPassId);
+
+      allow delete: if false;
+    }
+
+    // Events collection: approved attendee read, Admin-only write
+    match /events/{eventId} {
+      allow read: if isApprovedUserOrAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Broadcast notifications: approved attendee read, Admin-only write
+    match /notifications/{notificationId} {
+      allow read: if isApprovedUserOrAdmin();
+      allow write: if isAdmin();
+    }
+
+    // App downloads / install analytics: users write their own install doc, Admins read all
+    match /app_installs/{installId} {
+      allow read: if isAdmin();
+      allow create, update: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // Venues directory: approved attendee read, Admin-only write
+    match /venues/{venueId} {
+      allow read: if isApprovedUserOrAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Festival settings: approved attendee read, Admin-only write
+    match /fest_settings/{settingsId} {
+      allow read: if isApprovedUserOrAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Leaderboard: approved attendee read, Admin-only write
+    match /leaderboard/{scoreId} {
+      allow read: if isApprovedUserOrAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "CADUCEUS 2026",
+  "description": "Official Cultural Fest Mobile Application: Horror x Horoscope — Where Stars Align with Darkness.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

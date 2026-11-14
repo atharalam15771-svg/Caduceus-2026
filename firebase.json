@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-android-caduceus-840e7547-0469-4239-ab0c-b6dc0aea5d93",
+      "rules": "firestore.rules"
+    }
+  ]
+}
