@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CADUCEUS 2026 — Official Cultural Fest App | DMGMCH</title>
+  <meta name="description" content="Official Android app portal for CADUCEUS 2026 at Deben Mahata Government Medical College and Hospital, Hatuara, Purulia. Commences 17th December 2026 featuring Mohammed Irfan Live on 19th December 2026." />
+  <link rel="icon" type="image/png" href="./public/assets/aistudio/Take_a_look_at_my_Canva_design___2__632d825e.png" />
+  <style>
+    :root {
+      --bg: #070507;
+      --surface: #120d11;
+      --surface-elevated: #1b1318;
+      --crimson: #b3192e;
+      --crimson-dark: #630c18;
+      --gold: #d8b26e;
+      --text: #f6f2ec;
+      --muted: #b8aeb4;
+      --border: rgba(216, 178, 110, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: radial-gradient(circle at top center, #25080f 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+      background: #000;
+    }
+
+    .brand h1 {
+      font-size: 1.35rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+
+    .brand p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--crimson-dark);
+      color: var(--gold);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .hero {
+      margin-top: 28px;
+      background: linear-gradient(160deg, var(--surface) 0%, #19090e 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    .hero-eyebrow {
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin-top: 8px;
+      font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .hero-subtitle {
+      margin: 10px auto 0;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .countdown-grid {
+      margin: 24px auto 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(66px, 110px));
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .cd-box {
+      background: #0c090b;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+    }
+
+    .cd-val {
+      display: block;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .cd-lbl {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.68rem;
+      letter-spacing: 1.2px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .cta-row {
+      margin-top: 26px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.6px;
+      text-decoration: none;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.94;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--crimson) 0%, #831120 100%);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-secondary {
+      background: var(--surface-elevated);
+      color: var(--gold);
+      border: 1px solid var(--border);
+    }
+
+    .grid-two {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 780px) {
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .card h3 {
+      color: var(--gold);
+      font-size: 1rem;
+      letter-spacing: 1.2px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .poster-img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    .info-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .info-list li {
+      background: #0d0a0c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .info-list strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 2px;
+      font-size: 0.92rem;
+    }
+
+    footer {
+      margin-top: 38px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .credit {
+      margin-top: 10px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div class="brand">
+        <img src="./public/assets/aistudio/Take_a_look_at_my_Canva_design___2__632d825e.png" alt="CADUCEUS 2026 Crest" />
+        <div>
+          <h1>CADUCEUS 2026</h1>
+          <p>DEBEN MAHATA GOVT. MEDICAL COLLEGE &amp; HOSPITAL</p>
+        </div>
+      </div>
+      <span class="badge">ANDROID APP PORTAL</span>
+    </header>
+
+    <section class="hero">
+      <div class="hero-eyebrow">17TH DECEMBER 2026 • HATUARA, PURULIA</div>
+      <h2>THE NIGHT IS CALLING...</h2>
+      <p class="hero-subtitle">
+        Official companion Android application for CADUCEUS 2026. Sign in for admin-verified entry, your QR Digital Fest Pass, Star Night updates, and live alerts. Stay tuned for the full competition schedule!
+      </p>
+
+      <div class="countdown-grid" aria-label="Festival Countdown">
+        <div class="cd-box"><span class="cd-val" id="cd-days">--</span><span class="cd-lbl">DAYS</span></div>
+        <div class="cd-box"><span class="cd-val" id="cd-hours">--</span><span class="cd-lbl">HOURS</span></div>
+        <div class="cd-box"><span class="cd-val" id="cd-mins">--</span><span class="cd-lbl">MINS</span></div>
+        <div class="cd-box"><span class="cd-val" id="cd-secs">--</span><span class="cd-lbl">SECS</span></div>
+      </div>
+
+      <div class="cta-row">
+        <a id="apk-download-link" class="btn btn-primary" href="https://github.com" target="_blank" rel="noopener">
+          DOWNLOAD ANDROID APP (RELEASES)
+        </a>
+        <a class="btn btn-secondary" href="https://www.instagram.com/caduceus.dmgmch?vrfl=OGtwOGtpZDE3dXBv" target="_blank" rel="noopener">
+          @caduceus.dmgmch
+        </a>
+        <a class="btn btn-secondary" href="mailto:caduceus.fest@gmail.com">
+          caduceus.fest@gmail.com
+        </a>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <h3>Star Night • 19th December 2026</h3>
+        <img
+          class="poster-img"
+          src="./public/assets/aistudio/DOC-20261107-WA0024_c18de7c5.png"
+          alt="Mohammed Irfan Live at CADUCEUS 2026 on 19th December 2026"
+        />
+      </article>
+
+      <article class="card">
+        <h3>How to Install &amp; Enter</h3>
+        <ul class="info-list">
+          <li>
+            <strong>1. Download the Official Android APK</strong>
+            Upload your built signed APK to this repository's GitHub Releases (or generate APK via AI Studio / Android Studio) and share this page link with attendees.
+          </li>
+          <li>
+            <strong>2. Sign In With Google</strong>
+            Open CADUCEUS 2026 on your Android device and sign in. Your Digital Fest Pass ID will be created automatically.
+          </li>
+          <li>
+            <strong>3. Admin Approval &amp; Gate QR</strong>
+            Your account unlocks as soon as the CADUCEUS Admin verifies your registration, granting access to events, Star Night details, live notifications, and your QR entry pass.
+          </li>
+          <li>
+            <strong>Official Venue</strong>
+            Deben Mahata Government Medical College And Hospital, Hatuara, Purulia - 723147
+          </li>
+        </ul>
+      </article>
+    </section>
+
+    <footer>
+      <div>Official Contact: <a href="mailto:caduceus.fest@gmail.com">caduceus.fest@gmail.com</a> • Instagram: <a href="https://www.instagram.com/caduceus.dmgmch?vrfl=OGtwOGtpZDE3dXBv" target="_blank" rel="noopener">@caduceus.dmgmch</a></div>
+      <div class="credit">CREATED BY MD ATHAR ALAM</div>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      // Point release CTA dynamically to this repository's GitHub Releases when served via GitHub Pages
+      var host = window.location.hostname || "";
+      var pathParts = (window.location.pathname || "/").split("/").filter(Boolean);
+      var downloadLink = document.getElementById("apk-download-link");
+      if (host.endsWith(".github.io") && downloadLink) {
+        var owner = host.replace(".github.io", "");
+        var repo = pathParts.length > 0 ? pathParts[0] : (owner + ".github.io");
+        downloadLink.href = "https://github.com/" + owner + "/" + repo + "/releases/latest";
+      }
+
+      // Live IST countdown to 17th December 2026 09:00:00 IST
+      var targetMs = Date.parse("2026-12-17T09:00:00+05:30");
+      function pad(n) { return n < 10 ? "0" + n : String(n); }
+      function tick() {
+        var diff = Math.max(0, targetMs - Date.now());
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff / 3600000) % 24);
+        var m = Math.floor((diff / 60000) % 60);
+        var s = Math.floor((diff / 1000) % 60);
+        document.getElementById("cd-days").textContent = pad(d);
+        document.getElementById("cd-hours").textContent = pad(h);
+        document.getElementById("cd-mins").textContent = pad(m);
+        document.getElementById("cd-secs").textContent = pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
