@@ -181,6 +181,23 @@ fun DigitalPassScreen(
                     )
                 )
 
+                val passBadgeInfo = listOfNotNull(
+                    user.collegeName.takeIf { it.isNotBlank() && it != "CADUCEUS 2026" },
+                    user.designation.takeIf { it.isNotBlank() },
+                    user.batch.takeIf { it.isNotBlank() }?.let { "Batch $it" },
+                    user.rollNumber.ifBlank { user.studentId }.takeIf { it.isNotBlank() }?.let { "Roll $it" }
+                ).joinToString(" • ")
+                if (passBadgeInfo.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = passBadgeInfo,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = TextLightGrey,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(

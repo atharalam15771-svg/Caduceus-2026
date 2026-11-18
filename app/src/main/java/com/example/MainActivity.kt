@@ -65,6 +65,7 @@ import com.example.ui.screens.HoroscopeScreen
 import com.example.ui.screens.NotificationsScreen
 import com.example.ui.screens.OnboardingScreen
 import com.example.ui.screens.PendingApprovalScreen
+import com.example.ui.screens.PersonalDetailsScreen
 import com.example.ui.screens.ProfileAndMoreScreen
 import com.example.ui.screens.SplashScreen
 import com.example.ui.theme.AntiqueGold
@@ -347,6 +348,9 @@ fun MainFestAppContainer(
     var approvalStatusMessage by remember { mutableStateOf<String?>(null) }
 
     var showAdminPortal by remember { mutableStateOf(initialShowAdminPortal) }
+    var isEditingPersonalDetails by remember(authUid) { mutableStateOf(false) }
+    var isSavingPersonalDetails by remember { mutableStateOf(false) }
+    var personalDetailsError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(initialShowAdminPortal) {
         if (initialShowAdminPortal) {
@@ -418,6 +422,69 @@ fun MainFestAppContainer(
         return
     }
 
+    // Prompt for mandatory Personal Details right after Google Sign-In (or when editing from Pending/Profile)
+    val needsPersonalDetails = CaduceusRepository.shouldPromptPersonalDetails(currentProfile)
+    if (needsPersonalDetails || isEditingPersonalDetails) {
+        if (isEditingPersonalDetails) {
+            BackHandler {
+                personalDetailsError = null
+                isEditingPersonalDetails = false
+            }
+        }
+        PersonalDetailsScreen(
+            user = currentProfile,
+            isEditMode = isEditingPersonalDetails,
+            isSaving = isSavingPersonalDetails,
+            errorMessage = personalDetailsError,
+            onSaveDetails = { name, college, designationVal, batchVal, rollVal ->
+                CaduceusAudioManager.playTap(context)
+                isSavingPersonalDetails = true
+                personalDetailsError = null
+                scope.launch {
+                    val result = repository.updatePersonalDetails(
+                        uid = authUid,
+                        fullName = name,
+                        collegeName = college,
+                        designation = designationVal,
+                        batch = batchVal,
+                        rollNumber = rollVal
+                    )
+                    if (result.isSuccess) {
+                        val refreshed = repository.getUserProfileOnce(authUid)
+                        locallyRefreshedProfile = refreshed ?: currentProfile.copy(
+                            fullName = name,
+                            collegeName = college,
+                            designation = designationVal,
+                            batch = batchVal,
+                            rollNumber = rollVal,
+                            studentId = rollVal,
+                            profileCompleted = true
+                        )
+                        isEditingPersonalDetails = false
+                    } else {
+                        personalDetailsError = result.exceptionOrNull()?.localizedMessage
+                            ?: "Unable to save details right now. Please try again."
+                    }
+                    isSavingPersonalDetails = false
+                }
+            },
+            onCancelEdit = if (isEditingPersonalDetails) {
+                {
+                    CaduceusAudioManager.playTap(context)
+                    personalDetailsError = null
+                    isEditingPersonalDetails = false
+                }
+            } else null,
+            onSignOut = if (!isEditingPersonalDetails) {
+                {
+                    CaduceusAudioManager.playTap(context)
+                    onSignOut()
+                }
+            } else null
+        )
+        return
+    }
+
     // Gate ALL internal screens, streams, and fest notifications behind Admin Approval
     val isApproved = CaduceusRepository.isUserAllowedAccess(currentProfile) ||
         CaduceusRepository.isUserAllowedAccess(locallyRefreshedProfile)
@@ -453,6 +520,11 @@ fun MainFestAppContainer(
             onSignOut = {
                 CaduceusAudioManager.playTap(context)
                 onSignOut()
+            },
+            onEditDetails = {
+                CaduceusAudioManager.playTap(context)
+                personalDetailsError = null
+                isEditingPersonalDetails = true
             }
         )
         return
@@ -467,6 +539,10 @@ fun MainFestAppContainer(
         launchNotificationsTab = launchNotificationsTab,
         onConsumeNotificationsTab = onConsumeNotificationsTab,
         repository = repository,
+        onEditPersonalDetails = {
+            personalDetailsError = null
+            isEditingPersonalDetails = true
+        },
         onSignOut = onSignOut
     )
 }
@@ -481,6 +557,7 @@ private fun ApprovedFestContent(
     launchNotificationsTab: Boolean,
     onConsumeNotificationsTab: () -> Unit,
     repository: CaduceusRepository,
+    onEditPersonalDetails: () -> Unit,
     onSignOut: () -> Unit
 ) {
     val context = LocalContext.current
@@ -764,7 +841,8 @@ private fun ApprovedFestContent(
                     onSignOut = {
                         CaduceusAudioManager.playTap(context)
                         onSignOut()
-                    }
+                    },
+                    onEditPersonalDetails = onEditPersonalDetails
                 )
             }
         }

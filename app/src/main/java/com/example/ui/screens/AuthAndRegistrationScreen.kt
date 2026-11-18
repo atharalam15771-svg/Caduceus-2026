@@ -300,6 +300,32 @@ fun AuthAndRegistrationScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(22.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("auth_creator_credit"),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "CREATED BY",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = TextMuted,
+                        letterSpacing = 1.5.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "MD ATHAR ALAM",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = AntiqueGold,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.5.sp
+                    )
+                )
+            }
+
             Spacer(modifier = Modifier.height(30.dp))
         }
     }

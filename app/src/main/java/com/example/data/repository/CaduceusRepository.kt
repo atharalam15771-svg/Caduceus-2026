@@ -78,6 +78,14 @@ class CaduceusRepository(private val context: Context) {
             }
             return user.approvalStatus == ApprovalStatus.APPROVED.name
         }
+
+        fun shouldPromptPersonalDetails(user: CaduceusUser?): Boolean {
+            if (user == null) return false
+            if (user.role == UserRole.SUPER_ADMIN.name || user.role == UserRole.EVENT_ADMIN.name) {
+                return false
+            }
+            return !user.profileCompleted
+        }
     }
 
     // --- User & Profile Management ---
@@ -133,14 +141,27 @@ class CaduceusRepository(private val context: Context) {
             existing?.fullName?.takeIf { it.isNotBlank() } ?: fullName
         }
 
+        val resolvedCollege = existing?.collegeName?.takeIf { it.isNotBlank() } ?: collegeName.ifBlank { "CADUCEUS 2026" }
+        val resolvedDepartment = existing?.department?.takeIf { it.isNotBlank() } ?: department.ifBlank { "Cultural Delegate" }
+        val resolvedDesignation = existing?.designation ?: ""
+        val resolvedBatch = existing?.batch ?: ""
+        val resolvedRoll = existing?.rollNumber?.takeIf { it.isNotBlank() } ?: (existing?.studentId ?: studentId)
+        val resolvedIsStudent = existing?.isStudent ?: true
+        val resolvedCompleted = existing?.profileCompleted ?: false
+
         val payload = hashMapOf<String, Any>(
             "userId" to uid,
             "fullName" to resolvedName,
             "email" to resolvedEmail,
             "phone" to (phone.ifBlank { existing?.phone ?: "" }),
-            "collegeName" to (collegeName.ifBlank { existing?.collegeName ?: "CADUCEUS 2026" }),
-            "department" to (department.ifBlank { existing?.department ?: "Cultural Delegate" }),
-            "studentId" to (studentId.ifBlank { existing?.studentId ?: "" }),
+            "collegeName" to resolvedCollege,
+            "department" to resolvedDepartment,
+            "designation" to resolvedDesignation,
+            "studentId" to resolvedRoll,
+            "batch" to resolvedBatch,
+            "rollNumber" to resolvedRoll,
+            "isStudent" to resolvedIsStudent,
+            "profileCompleted" to resolvedCompleted,
             "role" to role,
             "approvalStatus" to approval,
             "festPassId" to festPassId,
@@ -162,9 +183,14 @@ class CaduceusRepository(private val context: Context) {
             fullName = resolvedName,
             email = resolvedEmail,
             phone = phone.ifBlank { existing?.phone ?: "" },
-            collegeName = collegeName.ifBlank { existing?.collegeName ?: "CADUCEUS 2026" },
-            department = department.ifBlank { existing?.department ?: "Cultural Delegate" },
-            studentId = studentId.ifBlank { existing?.studentId ?: "" },
+            collegeName = resolvedCollege,
+            department = resolvedDepartment,
+            designation = resolvedDesignation,
+            studentId = resolvedRoll,
+            batch = resolvedBatch,
+            rollNumber = resolvedRoll,
+            isStudent = resolvedIsStudent,
+            profileCompleted = resolvedCompleted,
             role = role,
             approvalStatus = approval,
             festPassId = festPassId,
@@ -172,6 +198,40 @@ class CaduceusRepository(private val context: Context) {
             checkedIn = existing?.checkedIn ?: false,
             checkedInBy = existing?.checkedInBy ?: ""
         )
+    }
+
+    suspend fun updatePersonalDetails(
+        uid: String,
+        fullName: String,
+        collegeName: String,
+        designation: String,
+        batch: String,
+        rollNumber: String
+    ): Result<Unit> = runCatching {
+        val cleanName = fullName.trim()
+        val cleanCollege = collegeName.trim()
+        val cleanDesignation = designation.trim()
+        val cleanBatch = batch.trim()
+        val cleanRoll = rollNumber.trim()
+        val formattedDept = listOfNotNull(
+            cleanDesignation.takeIf { it.isNotBlank() },
+            cleanBatch.takeIf { it.isNotBlank() }?.let { "Batch $it" },
+            cleanRoll.takeIf { it.isNotBlank() }?.let { "Roll $it" }
+        ).joinToString(" • ").ifBlank { "Cultural Delegate" }
+
+        val updates = hashMapOf<String, Any>(
+            "fullName" to cleanName,
+            "collegeName" to cleanCollege,
+            "designation" to cleanDesignation,
+            "batch" to cleanBatch,
+            "rollNumber" to cleanRoll,
+            "studentId" to cleanRoll,
+            "department" to formattedDept,
+            "profileCompleted" to true,
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+
+        db.collection("users").document(uid).update(updates).await()
     }
 
     suspend fun getUserProfileOnce(uid: String): CaduceusUser? {

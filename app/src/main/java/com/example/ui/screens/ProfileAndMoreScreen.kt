@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
@@ -36,6 +37,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,7 +86,8 @@ fun ProfileAndMoreScreen(
     leaderboard: List<LeaderboardEntry>,
     onOpenDigitalPass: () -> Unit,
     onOpenAdminPortal: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onEditPersonalDetails: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var isAudioEnabled by remember { mutableStateOf(CaduceusAudioManager.isAudioEnabled(context)) }
@@ -117,62 +120,104 @@ fun ProfileAndMoreScreen(
                 width = 1.dp
             )
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(16.dp)
             ) {
-                Box(
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(DarkBloodRed)
+                            .border(1.dp, AntiqueGold, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = user.fullName.take(1).uppercase(),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                color = TextWhite,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(14.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = user.fullName,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = TextWhite,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Text(
+                            text = user.email,
+                            style = MaterialTheme.typography.bodySmall.copy(color = TextLightGrey)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        val rollText = user.rollNumber.ifBlank { user.studentId }
+                        val secondaryInfo = listOfNotNull(
+                            user.collegeName.takeIf { it.isNotBlank() && it != "CADUCEUS 2026" },
+                            user.designation.takeIf { it.isNotBlank() },
+                            user.batch.takeIf { it.isNotBlank() }?.let { "Batch $it" },
+                            rollText.takeIf { it.isNotBlank() }?.let { "Roll $it" }
+                        ).joinToString(" • ").ifBlank {
+                            "${user.collegeName} • ${user.department}"
+                        }
+                        Text(
+                            text = secondaryInfo,
+                            style = MaterialTheme.typography.labelSmall.copy(color = AntiqueGold)
+                        )
+                    }
+
+                    Surface(
+                        color = DarkBloodRed,
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text(
+                            text = user.role,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = SolarGold,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        CaduceusAudioManager.playTap(context)
+                        onEditPersonalDetails()
+                    },
                     modifier = Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(DarkBloodRed)
-                        .border(1.dp, AntiqueGold, CircleShape),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .testTag("profile_edit_details_button"),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Personal Details",
+                        tint = AntiqueGold,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = user.fullName.take(1).uppercase(),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = TextWhite,
+                        text = if (user.profileCompleted) "EDIT PERSONAL DETAILS" else "ADD PERSONAL DETAILS",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = AntiqueGold,
                             fontWeight = FontWeight.Bold
                         )
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = user.fullName,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = TextWhite,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Text(
-                        text = user.email,
-                        style = MaterialTheme.typography.bodySmall.copy(color = TextLightGrey)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${user.collegeName} • ${user.department}",
-                        style = MaterialTheme.typography.labelSmall.copy(color = AntiqueGold)
-                    )
-                }
-
-                Surface(
-                    color = DarkBloodRed,
-                    shape = RoundedCornerShape(6.dp)
-                ) {
-                    Text(
-                        text = user.role,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = SolarGold,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
             }

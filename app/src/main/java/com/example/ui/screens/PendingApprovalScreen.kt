@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.VerifiedUser
@@ -67,7 +68,8 @@ fun PendingApprovalScreen(
     isCheckingStatus: Boolean,
     statusMessage: String?,
     onCheckStatus: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onEditDetails: (() -> Unit)? = null
 ) {
     val isRejected = user.approvalStatus == ApprovalStatus.REJECTED.name
     val accentColor = if (isRejected) PrimaryCrimson else AntiqueGold
@@ -239,6 +241,29 @@ fun PendingApprovalScreen(
                                     style = MaterialTheme.typography.bodySmall.copy(color = TextLightGrey)
                                 )
                             }
+                            val showCollege = user.collegeName.isNotBlank() && user.collegeName != "CADUCEUS 2026"
+                            if (showCollege) {
+                                Text(
+                                    text = "College: ${user.collegeName}",
+                                    style = MaterialTheme.typography.bodySmall.copy(color = AntiqueGold)
+                                )
+                            }
+                            if (user.designation.isNotBlank()) {
+                                Text(
+                                    text = "Designation: ${user.designation}",
+                                    style = MaterialTheme.typography.bodySmall.copy(color = TextLightGrey)
+                                )
+                            }
+                            val batchRoll = listOfNotNull(
+                                user.batch.takeIf { it.isNotBlank() }?.let { "Batch: $it" },
+                                user.rollNumber.ifBlank { user.studentId }.takeIf { it.isNotBlank() }?.let { "Roll No: $it" }
+                            ).joinToString("  •  ")
+                            if (batchRoll.isNotBlank()) {
+                                Text(
+                                    text = batchRoll,
+                                    style = MaterialTheme.typography.bodySmall.copy(color = TextLightGrey)
+                                )
+                            }
                             if (user.festPassId.isNotBlank()) {
                                 Text(
                                     text = "Pass ID: ${user.festPassId}",
@@ -289,6 +314,35 @@ fun PendingApprovalScreen(
                                 text = "CHECK APPROVAL STATUS",
                                 style = MaterialTheme.typography.labelLarge.copy(
                                     color = TextWhite,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+
+                    if (onEditDetails != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        OutlinedButton(
+                            onClick = onEditDetails,
+                            enabled = !isCheckingStatus,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("pending_edit_details_button"),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit Personal Details",
+                                tint = AntiqueGold,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "EDIT PERSONAL DETAILS",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    color = AntiqueGold,
                                     fontWeight = FontWeight.Bold
                                 )
                             )

@@ -140,6 +140,19 @@ fun SplashScreen(
                 ),
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(34.dp))
+
+            Text(
+                text = "Created by MD ATHAR ALAM",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = TextMuted,
+                    letterSpacing = 1.4.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.testTag("splash_creator_credit")
+            )
         }
     }
 }
@@ -299,6 +312,18 @@ fun OnboardingScreen(
                         )
                     )
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Created by MD ATHAR ALAM",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = TextMuted,
+                        letterSpacing = 1.2.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    modifier = Modifier.testTag("onboarding_creator_credit")
+                )
             }
         }
     }
